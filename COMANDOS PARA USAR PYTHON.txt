@@ -1,0 +1,40 @@
+COMANDOS PARA USAR PYTHON 
+
+VERSION DE PYTHON 
+py --version
+
+
+INSTALAR FLASK
+py -m pip install flask
+
+
+PARA EJECUTAR EL PROGRAMA DESDE LA TERMINAL 
+py app.py
+
+LIBRERIAS PARA GOOGLE
+py -m pip install google-cloud-dialogflow
+
+PARA USAR HTML CON PYTHON 
+py -m pip install Jinja2
+
+PARA APIS GEMINI
+https://aistudio.google.com/app/apikey
+
+API KEY  
+AIzaSyAJsG5hFzMn8CUn2TfOIJrYA67b6j7MLdg 
+
+-Busca "Editar las variables de entorno del sistema" en el menú de inicio y ábrelo.
+-Haz clic en el botón "Variables de entorno...".
+-En la sección "Variables de usuario" o "Variables del sistema", haz clic en "Nuevo...".
+-En el campo "Nombre de la variable", escribe GEMINI_API_KEY.
+-En el campo "Valor de la variable", pega tu clave de API: AIzaSyAJsG5hFzMn8CUn2TfOIJrYA67b6j7MLdg.
+-Haz clic en "Aceptar" en todas las ventanas para guardar los cambios. Es posible que necesites reiniciar tu terminal o incluso tu IDE 
+para que la variable de entorno se reconozca.
+
+LIBRERIA PAR LA API DE GEMINI
+py -m pip install google-generativeai  
+
+PARA USAR MYSQL Y PYTHON 
+py -m pip install mysql-connector-python
+
+
