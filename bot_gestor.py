@@ -34,7 +34,17 @@ def responder(user_message):
 
     # 1. Intenta entender la intención del usuario usando lógica directa (palabras clave)
     if "hola" in user_message_lower:
-        return "¡Hola! ¿En qué puedo ayudarte hoy?"
+      return (
+    "¡Hola! ¿En qué puedo ayudarte hoy? \n"
+    "Puedo asistirte con lo siguiente:\n"
+    "- Mostrar todos los doctores.\n"
+    "- Agendar, actualizar o eliminar citas médicas.\n"
+    "- Consultar información sobre tus citas existentes.\n"
+    "- Buscar doctores por especialidad.\n"
+    "- Brindarte soporte médico con la asistencia de la IA.\n"
+    "Solo dime lo que necesitas y estaré encantado de ayudarte."
+)
+
     elif "listar doctores" in user_message_lower or "mostrar todos los doctores" in user_message_lower or "¿qué doctores hay?" in user_message_lower or "quisiera ver la lista de doctores" in user_message_lower or "nómina de doctores" in user_message_lower or "doctores disponibles" in user_message_lower:
         estado_conversacion['ultimo_intento'] = None
         doctores = listar_doctores()

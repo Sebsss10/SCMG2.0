@@ -1,217 +1,257 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistente Virtual</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e0f2f7; /* Un verde azulado muy claro */
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asistente Virtual</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #eaf6f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-        .chat-container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            max-width: 95%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        h2 {
-            background-color: #00897b; /* Verde WhatsApp */
-            color: #fff;
-            padding: 20px;
-            margin: 0;
-            text-align: center;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
+    h1 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
 
-        #chatMessages {
-            padding: 15px;
-            overflow-y: auto; /* Habilitar scroll vertical */
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            max-height: 300px; /* O una altura que consideres adecuada para el scroll */
-        }
+    .chat-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      width: 500px;
+      height: 540px;
+      max-width: 95%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #cce0e4;
+    }
 
-        .user-msg, .bot-msg {
-            background-color: #dcf8c6; /* Verde claro mensajes usuario */
-            color: #1c1c1c;
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            align-self: flex-end;
-            max-width: 80%;
-            word-break: break-word;
-            position: relative; /* Para los "bocadillos" */
-        }
+    h2 {
+      background-color: #1976d2;
+      color: #ffffff;
+      padding: 18px;
+      margin: 0;
+      text-align: center;
+      font-size: 1.4rem;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
 
-        .bot-msg {
-            background-color: #fff; /* Blanco mensajes bot */
-            align-self: flex-start;
-        }
+    #chatMessages {
+      padding: 16px;
+      overflow-y: auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      max-height: 370px;
+      scroll-behavior: smooth;
+      background-color: #f9fcfd;
+      font-size: 1rem;
+    }
 
-        .user-msg::before {
-            content: "";
-            position: absolute;
-            border-right: 10px solid #dcf8c6;
-            border-top: 10px solid transparent;
-            bottom: 0;
-            right: -10px;
-        }
+    .user-msg, .bot-msg {
+      padding: 12px 14px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      max-width: 85%;
+      word-break: break-word;
+      position: relative;
+      line-height: 1.4;
+    }
 
-        .bot-msg::before {
-            content: "";
-            position: absolute;
-            border-left: 10px solid #fff;
-            border-top: 10px solid transparent;
-            bottom: 0;
-            left: -10px;
-        }
-
-        .chat-input {
-            display: flex;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-top: 1px solid #ddd;
-        }
-
-        .chat-input input[type="text"] {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .chat-input button {
-            background-color: #00897b; /* Verde WhatsApp */
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .chat-input button:hover {
-            background-color: #00695c;
-        }
+    .user-msg {
+      background-color: #cce5ff;
+      color: #0b2e52;
+      align-self: flex-end;
+    }
 
     .bot-msg {
-        background-color: #f1f1f1; /* Gris claro */
-        color: #333; /* Gris oscuro */
-        align-self: flex-start;
-        border: 1px solid #e0e0e0; /* Borde sutil */
+      background-color: #e8f5e9;
+      color: #1e1e1e;
+      align-self: flex-start;
+      border: 1px solid #c2e0c6;
+    }
+
+    .user-msg::before {
+      content: "";
+      position: absolute;
+      border-right: 10px solid #cce5ff;
+      border-top: 10px solid transparent;
+      bottom: 0;
+      right: -10px;
+    }
+
+    .bot-msg::before {
+      content: "";
+      position: absolute;
+      border-left: 10px solid #e8f5e9;
+      border-top: 10px solid transparent;
+      bottom: 0;
+      left: -10px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 12px;
+      background-color: #f0f4f7;
+      border-top: 1px solid #d0dfe5;
+    }
+
+    .chat-input input[type="text"] {
+      flex-grow: 1;
+      padding: 10px 12px;
+      border: 1px solid #b0c4d1;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      background-color: #ffffff;
+      transition: border-color 0.3s;
+    }
+
+    .chat-input input[type="text"]:focus {
+      border-color: #1976d2;
+    }
+
+    .chat-input button {
+      background-color: #1976d2;
+      color: #ffffff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 10px;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-input button:hover {
+      background-color: #1254a1;
     }
 
     .bot-msg strong {
-        font-weight: bold;
+      font-weight: bold;
     }
 
     .bot-msg em {
-        font-style: italic;
-        color: #777;
+      font-style: italic;
+      color: #555;
     }
 
     .bot-msg ul {
-        padding-left: 20px;
-        margin-bottom: 10px;
+      padding-left: 20px;
+      margin: 10px 0;
     }
 
     .bot-msg li {
-        margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .bot-msg h3 {
-        font-size: 1.1em;
-        margin-top: 10px;
-        margin-bottom: 5px;
-        color: #555;
+      font-size: 1rem;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      color: #3b3b3b;
     }
 
+    /* Animación de puntos suspensivos */
+    .typing::after {
+      content: '.';
+      animation: dots 1.2s steps(3, end) infinite;
+    }
 
-    </style>
+    @keyframes dots {
+      0% { content: '.'; }
+      33% { content: '..'; }
+      66% { content: '...'; }
+      100% { content: '.'; }
+    }
+  </style>
 </head>
 <body>
+  <div class="main-container">
+    <h1>Sistema de Agendación Médica</h1>
     <div class="chat-container">
-        <h2>Asistente Virtual</h2>
-        <div id="chatMessages"></div>
-        <div class="chat-input">
-            <input type="text" id="pregunta" placeholder="Escribe tu mensaje...">
-            <button id="btnEnviar">Enviar</button>
-        </div>
+      <h2>Asistente Virtual</h2>
+      <div id="chatMessages"></div>
+      <div class="chat-input">
+        <input type="text" id="pregunta" placeholder="Escribe tu mensaje...">
+        <button id="btnEnviar">Enviar</button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatInput = document.getElementById('pregunta');
-            const btnEnviar = document.getElementById('btnEnviar');
-            const chatMessages = document.getElementById('chatMessages');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const chatInput = document.getElementById('pregunta');
+      const btnEnviar = document.getElementById('btnEnviar');
+      const chatMessages = document.getElementById('chatMessages');
 
-            function mostrarMensajeUsuario(mensaje) {
-                chatMessages.innerHTML += `<div class="user-msg">Tú: ${mensaje}</div>`;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+      function mostrarMensajeUsuario(mensaje) {
+        chatMessages.innerHTML += `<div class="user-msg">Tú: ${mensaje}</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
 
-            function mostrarMensajeBot(mensaje) {
-                const botDiv = document.createElement('div');
-                botDiv.classList.add('bot-msg');
-                botDiv.textContent = `Bot: ${mensaje}`; // Usar textContent
-                chatMessages.appendChild(botDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+      function mostrarMensajeBot(mensaje) {
+        const botDiv = document.createElement('div');
+        botDiv.classList.add('bot-msg');
+        botDiv.textContent = `🩺 MediBot: ${mensaje}`;
+        chatMessages.appendChild(botDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
 
-            function enviarPregunta() {
-                const pregunta = chatInput.value.trim();
-                if (!pregunta) return;
+      function enviarPregunta() {
+        const pregunta = chatInput.value.trim();
+        if (!pregunta) return;
 
-                mostrarMensajeUsuario(pregunta);
-                chatInput.value = '';
+        mostrarMensajeUsuario(pregunta);
+        chatInput.value = '';
 
-                mostrarMensajeBot('Pensando...'); // Simular espera
+        const pensandoDiv = document.createElement('div');
+        pensandoDiv.classList.add('bot-msg', 'typing');
+        pensandoDiv.textContent = '🩺 MediBot: Pensando';
+        chatMessages.appendChild(pensandoDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                fetch('/chatbot', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: pregunta })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Eliminar el "Pensando..."
-                    const pensando = chatMessages.lastElementChild;
-                    if (pensando && pensando.textContent === 'Bot: Pensando...') {
-                        chatMessages.removeChild(pensando);
-                    }
-                    mostrarMensajeBot(data.respuesta || 'No se pudo obtener respuesta.');
-                })
-                .catch(error => {
-                    // Eliminar el "Pensando..." en caso de error
-                    const pensando = chatMessages.lastElementChild;
-                    if (pensando && pensando.textContent === 'Bot: Pensando...') {
-                        chatMessages.removeChild(pensando);
-                    }
-                    mostrarMensajeBot('Lo siento, hubo un error al comunicarme.');
-                    console.error('Error:', error);
-                });
-            }
+        fetch('/chatbot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: pregunta })
+        })
+          .then(response => response.json())
+          .then(data => {
+            pensandoDiv.remove(); // Quita el mensaje de "Pensando..."
+            mostrarMensajeBot(data.respuesta || 'No se pudo obtener respuesta.');
+          })
+          .catch(error => {
+            pensandoDiv.remove();
+            mostrarMensajeBot('Lo siento, hubo un error al comunicarme.');
+            console.error('Error:', error);
+          });
+      }
 
-            btnEnviar.addEventListener('click', enviarPregunta);
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') enviarPregunta();
-            });
-        });
-    </script>
+      btnEnviar.addEventListener('click', enviarPregunta);
+      chatInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') enviarPregunta();
+      });
+    });
+  </script>
 </body>
 </html>
