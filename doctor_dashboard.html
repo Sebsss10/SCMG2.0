@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediBot - Panel de Doctor</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/4712/4712033.png" type="image/png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e6f7f8 0%, #d0e7f0 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background-color: #0077b6;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .navbar h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar a:hover {
+      background-color: #00b4d8;
+    }
+
+    .content {
+      flex: 1;
+      padding-top: 60px; /* Offset for fixed navbar */
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .dashboard-container {
+      background: #fff;
+      max-width: 1000px;
+      width: 90%;
+      margin: 30px auto;
+      padding: 30px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+      border-radius: 20px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-container h2 {
+      color: #0077b6;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-container h3 {
+      color: #0077b6;
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: #f0fbfc;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1a2f44;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fbfc;
+    }
+
+    tr:nth-child(odd) {
+      background-color: #fff;
+    }
+
+    tr {
+      animation: slideIn 0.3s ease-out;
+    }
+
+    tr:hover {
+      background-color: #e6f0f5;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      background-color: #fff;
+      cursor: pointer;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    select:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 6px rgba(0, 180, 216, 0.3);
+      outline: none;
+    }
+
+    .status-completada {
+      background: #e6ffea;
+      color: #2e7d32;
+    }
+
+    .status-pendiente {
+      background: #fff8e1;
+      color: #f57c00;
+    }
+
+    .status-cancelada {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
+    button {
+      background: linear-gradient(to right, #00b4d8, #0077b6);
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+    }
+
+    .history-btn {
+      margin-left: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .dashboard-container {
+        padding: 20px;
+        margin: 20px 10px;
+      }
+      .navbar {
+        padding: 8px 12px;
+      }
+      .navbar h1 {
+        font-size: 1.3rem;
+      }
+      .navbar a {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+      }
+      .dashboard-container h2 {
+        font-size: 1.6rem;
+      }
+      .dashboard-container h3 {
+        font-size: 1.2rem;
+      }
+      th,
+      td {
+        font-size: 0.85rem;
+        padding: 8px;
+      }
+      select,
+      button {
+        font-size: 0.85rem;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1>MediBot</h1>
+    <a href="/" class="logout">Cerrar Sesión</a>
+  </nav>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="dashboard-container">
+      <h2>Bienvenido, {{ doctor_nombre }}</h2>
+      <h3>Mis Citas</h3>
+      <div class="table-wrapper">
+        <table>
+          <tr>
+            <th>Paciente</th>
+            <th>Carnet</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+          {% for cita in citas %}
+          <tr>
+            <td>{{ cita.nombre_paciente }}</td>
+            <td>{{ cita.carnet_paciente }}</td>
+            <td>{{ cita.fecha }}</td>
+            <td>{{ cita.hora }}</td>
+            <td>
+              <select class="status-{{ cita.estado }}" onchange="updateStatus({{ cita.id }}, this.value)">
+                <option value="pendiente" {% if cita.estado=='pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="completada" {% if cita.estado=='completada' %}selected{% endif %}>Completada</option>
+                <option value="cancelada" {% if cita.estado=='cancelada' %}selected{% endif %}>Cancelada</option>
+              </select>
+            </td>
+            <td>
+              <button class="history-btn" onclick="viewHistory('{{ cita.carnet_paciente }}')">Ver Historial</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateStatus(citaId, status) {
+      const selectElement = event.target;
+      fetch('/update_appointment_status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `cita_id=${citaId}&status=${status}`
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Remove existing status classes
+            selectElement.classList.remove('status-completada', 'status-pendiente', 'status-cancelada');
+            // Add new status class
+            selectElement.classList.add(`status-${status}`);
+            alert('Estado actualizado correctamente');
+          } else {
+            alert('Error al actualizar el estado');
+          }
+        });
+    }
+
+    function viewHistory(carnet) {
+      fetch('/patient_history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `carnet_paciente=${carnet}`
+      })
+        .then(response => response.json())
+        .then(data => {
+          let message = 'Historial del paciente:\n';
+          data.historial.forEach(cita => {
+            message += `- ${cita.fecha} ${cita.hora} con ${cita.doctor_nombre} (${cita.especialidad}), Estado: ${cita.estado}\n`;
+          });
+          alert(message);
+        });
+    }
+  </script>
+</body>
+</html>

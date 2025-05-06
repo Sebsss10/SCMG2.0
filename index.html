@@ -3,197 +3,279 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Asistente Virtual</title>
+  <title>MediBot - Chat Médico</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/4712/4712033.png" type="image/png">
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #eaf6f9;
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e6f7f8 0%, #d0e7f0 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background-color: #0077b6;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .navbar h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar a:hover {
+      background-color: #00b4d8;
+    }
+
+    .content {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      text-align: center;
-      color: #1976d2;
-      margin-bottom: 20px;
-      font-size: 2rem;
+      padding-top: 60px; /* Offset for fixed navbar */
     }
 
     .chat-container {
-      background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-      width: 500px;
-      height: 540px;
-      max-width: 95%;
+      background: #fff;
+      width: 400px;
+      height: 500px;
+      max-width: 90%;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+      border-radius: 20px;
       overflow: hidden;
-      border: 1px solid #cce0e4;
+      animation: fadeIn 0.5s ease-out;
+      margin: auto;
     }
 
-    h2 {
-      background-color: #1976d2;
-      color: #ffffff;
-      padding: 18px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-header {
+      background-color: #0077b6;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-header img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .chat-header h2 {
       margin: 0;
-      text-align: center;
-      font-size: 1.4rem;
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
     }
 
     #chatMessages {
-      padding: 16px;
-      overflow-y: auto;
-      flex-grow: 1;
+      flex: 1;
+      padding: 12px;
+      background-color: #f8fbfc;
+      overflow-y: scroll; /* Always show scrollbar */
       display: flex;
       flex-direction: column;
-      max-height: 370px;
-      scroll-behavior: smooth;
-      background-color: #f9fcfd;
-      font-size: 1rem;
+      gap: 8px;
     }
 
-    .user-msg, .bot-msg {
-      padding: 12px 14px;
-      border-radius: 16px;
-      margin-bottom: 10px;
-      max-width: 85%;
-      word-break: break-word;
-      position: relative;
-      line-height: 1.4;
+    .message {
+      max-width: 70%;
+      padding: 8px 12px;
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: 0.9rem;
+      word-wrap: break-word;
+      animation: slideIn 0.3s ease-out;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .user-msg {
-      background-color: #cce5ff;
-      color: #0b2e52;
       align-self: flex-end;
+      background-color: #c1e5dc;
+      color: #1b3c2e;
+      border-bottom-right-radius: 4px;
     }
 
     .bot-msg {
-      background-color: #e8f5e9;
-      color: #1e1e1e;
       align-self: flex-start;
-      border: 1px solid #c2e0c6;
+      background-color: #dbeeff;
+      color: #1a2f44;
+      border: 1px solid #bcd6eb;
+      border-bottom-left-radius: 4px;
     }
 
-    .user-msg::before {
-      content: "";
-      position: absolute;
-      border-right: 10px solid #cce5ff;
-      border-top: 10px solid transparent;
-      bottom: 0;
-      right: -10px;
-    }
-
-    .bot-msg::before {
-      content: "";
-      position: absolute;
-      border-left: 10px solid #e8f5e9;
-      border-top: 10px solid transparent;
-      bottom: 0;
-      left: -10px;
+    .typing-msg {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: #666;
+      box-shadow: none;
+      animation: none;
     }
 
     .chat-input {
       display: flex;
-      padding: 12px;
-      background-color: #f0f4f7;
-      border-top: 1px solid #d0dfe5;
+      padding: 8px 14px;
+      border-top: 1px solid #ddd;
+      background-color: #f4f9fa;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
     }
 
-    .chat-input input[type="text"] {
-      flex-grow: 1;
-      padding: 10px 12px;
-      border: 1px solid #b0c4d1;
-      border-radius: 8px;
-      font-size: 1rem;
+    .chat-input input {
+      flex: 1;
+      padding: 7px 12px;
+      font-size: 0.9rem;
+      border: 1px solid #ccc;
+      border-radius: 20px;
       outline: none;
-      background-color: #ffffff;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .chat-input input[type="text"]:focus {
-      border-color: #1976d2;
+    .chat-input input:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 8px rgba(0, 180, 216, 0.3);
     }
 
     .chat-input button {
-      background-color: #1976d2;
-      color: #ffffff;
+      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+      color: white;
       border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-left: 10px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
       font-size: 1rem;
-      transition: background-color 0.3s ease;
+      margin-left: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
     }
 
     .chat-input button:hover {
-      background-color: #1254a1;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
     }
 
-    .bot-msg strong {
-      font-weight: bold;
+    #chatMessages::-webkit-scrollbar {
+      width: 8px;
     }
 
-    .bot-msg em {
-      font-style: italic;
-      color: #555;
+    #chatMessages::-webkit-scrollbar-thumb {
+      background-color: #00b4d8;
+      border-radius: 10px;
     }
 
-    .bot-msg ul {
-      padding-left: 20px;
-      margin: 10px 0;
+    #chatMessages::-webkit-scrollbar-track {
+      background: #e6f0f5;
     }
 
-    .bot-msg li {
-      margin-bottom: 6px;
-    }
-
-    .bot-msg h3 {
-      font-size: 1rem;
-      margin-top: 10px;
-      margin-bottom: 5px;
-      color: #3b3b3b;
-    }
-
-    /* Animación de puntos suspensivos */
-    .typing::after {
-      content: '.';
-      animation: dots 1.2s steps(3, end) infinite;
-    }
-
-    @keyframes dots {
-      0% { content: '.'; }
-      33% { content: '..'; }
-      66% { content: '...'; }
-      100% { content: '.'; }
+    @media (max-width: 480px) {
+      .chat-container {
+        width: 100%;
+        height: 450px;
+      }
+      .navbar {
+        padding: 8px 12px;
+      }
+      .navbar h1 {
+        font-size: 1.3rem;
+      }
+      .navbar a {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+      }
+      .chat-header {
+        padding: 8px 12px;
+      }
+      .chat-header img {
+        width: 28px;
+        height: 28px;
+      }
+      .chat-header h2 {
+        font-size: 0.9rem;
+      }
+      #chatMessages {
+        padding: 10px;
+      }
+      .message {
+        font-size: 0.85rem;
+        padding: 7px 10px;
+      }
+      .chat-input {
+        padding: 7px 12px;
+      }
+      .chat-input input {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+      }
+      .chat-input button {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+        margin-left: 7px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="main-container">
-    <h1>Sistema de Agendación Médica</h1>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <h1>MediBot</h1>
+    <a href="/login">Iniciar Sesión</a>
+  </nav>
+
+  <!-- Content Wrapper -->
+  <div class="content">
     <div class="chat-container">
-      <h2>Asistente Virtual</h2>
+      <div class="chat-header">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712033.png" alt="MediBot Avatar">
+        <h2>MediBot</h2>
+      </div>
       <div id="chatMessages"></div>
       <div class="chat-input">
-        <input type="text" id="pregunta" placeholder="Escribe tu mensaje...">
-        <button id="btnEnviar">Enviar</button>
+        <input type="text" id="pregunta" placeholder="Escribe un mensaje..." />
+        <button id="btnEnviar">➤</button>
       </div>
     </div>
   </div>
@@ -204,17 +286,24 @@
       const btnEnviar = document.getElementById('btnEnviar');
       const chatMessages = document.getElementById('chatMessages');
 
-      function mostrarMensajeUsuario(mensaje) {
-        chatMessages.innerHTML += `<div class="user-msg">Tú: ${mensaje}</div>`;
+      function scrollToBottom() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function mostrarMensajeUsuario(mensaje) {
+        const userDiv = document.createElement('div');
+        userDiv.classList.add('message', 'user-msg');
+        userDiv.textContent = mensaje;
+        chatMessages.appendChild(userDiv);
+        scrollToBottom();
       }
 
       function mostrarMensajeBot(mensaje) {
         const botDiv = document.createElement('div');
-        botDiv.classList.add('bot-msg');
-        botDiv.textContent = `🩺 MediBot: ${mensaje}`;
+        botDiv.classList.add('message', 'bot-msg');
+        botDiv.textContent = mensaje;
         chatMessages.appendChild(botDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        scrollToBottom();
       }
 
       function enviarPregunta() {
@@ -225,10 +314,10 @@
         chatInput.value = '';
 
         const pensandoDiv = document.createElement('div');
-        pensandoDiv.classList.add('bot-msg', 'typing');
-        pensandoDiv.textContent = '🩺 MediBot: Pensando';
+        pensandoDiv.classList.add('message', 'bot-msg', 'typing-msg');
+        pensandoDiv.textContent = 'MediBot está escribiendo...';
         chatMessages.appendChild(pensandoDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        scrollToBottom();
 
         fetch('/chatbot', {
           method: 'POST',
@@ -237,7 +326,7 @@
         })
           .then(response => response.json())
           .then(data => {
-            pensandoDiv.remove(); // Quita el mensaje de "Pensando..."
+            pensandoDiv.remove();
             mostrarMensajeBot(data.respuesta || 'No se pudo obtener respuesta.');
           })
           .catch(error => {
@@ -251,6 +340,9 @@
       chatInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') enviarPregunta();
       });
+
+      // Ensure initial scroll to bottom
+      scrollToBottom();
     });
   </script>
 </body>

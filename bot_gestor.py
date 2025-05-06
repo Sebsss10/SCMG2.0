@@ -9,18 +9,25 @@ from database_queries import (
     buscar_doctores_por_especialidad,
     buscar_citas_por_paciente,
     actualizar_cita,
-    eliminar_cita
+    eliminar_cita,
+    buscar_citas_disponibles_por_dia_especialidad
 )
 
 # --- Configuración de la API de Gemini ---
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-2.0-flash')
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-2.0-flash')
+else:
+    model = None
+    print("Advertencia: La clave de API de Gemini no está configurada.")
 
 estado_conversacion = {}
 
 def procesar_pregunta_general(user_message):
     """Función para procesar preguntas generales usando la API de Gemini"""
+    if model is None:
+        return "Lo siento, la funcionalidad de Gemini no está disponible. Por favor, verifica la configuración de la API."
     try:
         response = model.generate_content(user_message)
         return response.text
@@ -34,16 +41,17 @@ def responder(user_message):
 
     # 1. Intenta entender la intención del usuario usando lógica directa (palabras clave)
     if "hola" in user_message_lower:
-      return (
-    "¡Hola! ¿En qué puedo ayudarte hoy? \n"
-    "Puedo asistirte con lo siguiente:\n"
-    "- Mostrar todos los doctores.\n"
-    "- Agendar, actualizar o eliminar citas médicas.\n"
-    "- Consultar información sobre tus citas existentes.\n"
-    "- Buscar doctores por especialidad.\n"
-    "- Brindarte soporte médico con la asistencia de la IA.\n"
-    "Solo dime lo que necesitas y estaré encantado de ayudarte."
-)
+        return (
+            "¡Hola! ¿En qué puedo ayudarte hoy? \n"
+            "Puedo asistirte con lo siguiente:\n"
+            "- Mostrar todos los doctores.\n"
+            "- Agendar, actualizar o eliminar citas médicas.\n"
+            "- Consultar información sobre tus citas existentes.\n"
+            "- Buscar doctores por especialidad.\n"
+            "- Ver citas disponibles por fecha y especialidad.\n"
+            "- Brindarte soporte médico con la asistencia de la IA.\n"
+            "Solo dime lo que necesitas y estaré encantado de ayudarte."
+        )
 
     elif "listar doctores" in user_message_lower or "mostrar todos los doctores" in user_message_lower or "¿qué doctores hay?" in user_message_lower or "quisiera ver la lista de doctores" in user_message_lower or "nómina de doctores" in user_message_lower or "doctores disponibles" in user_message_lower:
         estado_conversacion['ultimo_intento'] = None
@@ -117,7 +125,7 @@ def responder(user_message):
         carnet = user_message.strip()
         cita = consultar_cita_por_carnet(carnet)
         if cita:
-            chatbot_reply = f"Tu próxima cita es el {cita['fecha']} a las {cita['hora']} con  {cita['doctor_nombre']} ({cita['especialidad']})."
+            chatbot_reply = f"Tu próxima cita es el {cita['fecha']} a las {cita['hora']} con {cita['doctor_nombre']} ({cita['especialidad']})."
         else:
             chatbot_reply = f"No se encontró ninguna cita registrada con el carnet: {carnet}."
         estado_conversacion['ultimo_intento'] = None
@@ -149,24 +157,6 @@ def responder(user_message):
             return chatbot_reply
         else:
             return procesar_pregunta_general(user_message)
-    elif re.search(r"(qué|que) doctores atienden los (lunes|martes|miércoles|jueves|viernes|sábado|domingo)", user_message_lower):
-        match = re.search(r"(qué|que) doctores atienden los (lunes|martes|miércoles|jueves|viernes|sábado|domingo)", user_message_lower)
-        if match:
-            dia_semana = match.group(2).capitalize()
-            if 'buscar_doctores_por_dia' in globals():  # Verifica si la función existe
-                doctores_dia = buscar_doctores_por_dia(dia_semana)
-                chatbot_reply = ""
-                if doctores_dia:
-                    chatbot_reply += f"Doctores que atienden los {dia_semana}:\n"
-                    for doctor in doctores_dia:
-                        chatbot_reply += f"- Nombre: {doctor['nombre']}, Especialidad: {doctor['especialidad']}\n"
-                else:
-                    chatbot_reply = f"No hay doctores que atienden los {dia_semana} en este momento."
-                return chatbot_reply
-            else:
-                return procesar_pregunta_general(user_message)
-        else:
-            return procesar_pregunta_general(user_message)
     elif "citas disponibles" in user_message_lower or "¿hay citas disponibles?" in user_message_lower:
         estado_conversacion['ultimo_intento'] = 'consultar_disponibilidad_dia'
         return "¿Para qué día le gustaría consultar la disponibilidad (YYYY-MM-DD)?"
@@ -182,17 +172,14 @@ def responder(user_message):
         especialidad_consulta = user_message.strip()
         fecha_consulta = estado_conversacion.pop('fecha_consulta')
         estado_conversacion['ultimo_intento'] = None
-        # Aquí deberías llamar a una función para buscar citas disponibles por día y especialidad
-        # citas_disponibles = buscar_citas_disponibles_por_dia_especialidad(fecha_consulta, especialidad_consulta)
-        # if citas_disponibles:
-        #     chatbot_reply += f"Citas disponibles para el {fecha_consulta} en la especialidad de '{especialidad_consulta}':\n"
-        #     for cita in citas_disponibles:
-        #         doctor_nombre = cita.get('doctor_nombre', 'Desconocido')
-        #         hora = cita.get('hora', 'Sin hora')
-        #         chatbot_reply += f"- Doctor: {doctor_nombre}, Hora: {hora}\n"
-        # else:
-        #     chatbot_reply = f"No hay citas disponibles para el {fecha_consulta} en la especialidad de '{especialidad_consulta}'."
-        return "Esta funcionalidad aún no está implementada."
+        citas_disponibles = buscar_citas_disponibles_por_dia_especialidad(fecha_consulta, especialidad_consulta)
+        if citas_disponibles:
+            chatbot_reply += f"Citas disponibles para el {fecha_consulta} en la especialidad de '{especialidad_consulta}':\n"
+            for cita in citas_disponibles:
+                chatbot_reply += f"- Doctor: {cita['doctor_nombre']}, Hora: {cita['hora']}\n"
+        else:
+            chatbot_reply = f"No hay citas disponibles para el {fecha_consulta} en la especialidad de '{especialidad_consulta}'."
+        return chatbot_reply
     elif re.search(r"(actualizar|cambiar) cita", user_message_lower):
         estado_conversacion['ultimo_intento'] = 'actualizar_cita_carnet'
         return "Por favor, proporcione el número de carnet del paciente cuya cita desea actualizar."
@@ -220,7 +207,7 @@ def responder(user_message):
             estado_conversacion['nuevo_doctor_id'] = doctor['id']
             estado_conversacion['nuevo_doctor_nombre'] = doctor['nombre']
             estado_conversacion['ultimo_intento'] = 'actualizar_cita_fecha'
-            return f"Ha seleccionado A {doctor['nombre']} ({especialidad_nuevo_doctor}). ¿Para qué nueva fecha desea la cita (YYYY-MM-DD)?"
+            return f"Ha seleccionado a {doctor['nombre']} ({especialidad_nuevo_doctor}). ¿Para qué nueva fecha desea la cita (YYYY-MM-DD)?"
         else:
             return f"No se encontraron doctores con la especialidad de '{especialidad_nuevo_doctor}'. ¿Desea intentar con otra especialidad (sí/no)?"
     elif estado_conversacion.get('ultimo_intento') == 'actualizar_cita_fecha' and 'carnet_actualizar' in estado_conversacion:
@@ -247,6 +234,5 @@ def responder(user_message):
             return mensaje_actualizacion
         else:
             return f"No se encontró ninguna cita para el carnet {carnet_actualizar} o hubo un error al actualizar."
-    # 2. Si la intención no se identifica con lógica directa, usa la API de Gemini
     else:
         return procesar_pregunta_general(user_message)
